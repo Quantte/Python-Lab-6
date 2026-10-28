@@ -1,84 +1,87 @@
+from types import NotImplementedType
+
+
 class Employee:
-    def __init__(self, hours, rate, bonus_coefficient):
+    def __init__(self, hours: int, rate: int, bonus_coefficient: float):
         self.hours = hours
         self.rate = rate
         self.bonus_coefficient = bonus_coefficient
 
     @property
-    def hours(self):
+    def hours(self) -> int:
         return self._hours
 
     @hours.setter
-    def hours(self, value):
+    def hours(self, value: int) -> None:
         if value <= 0:
             raise ValueError("Количество рабочих часов должно быть больше нуля")
         self._hours = value
 
     @property
-    def rate(self):
+    def rate(self) -> int:
         return self._rate
 
     @rate.setter
-    def rate(self, value):
+    def rate(self, value: int) -> None:
         if value < 0:
             raise ValueError("Ставка не может быть отрицательной")
         self._rate = value
 
     @property
-    def bonus_coefficient(self):
+    def bonus_coefficient(self) -> float:
         return self._bonus_coefficient
 
     @bonus_coefficient.setter
-    def bonus_coefficient(self, value):
+    def bonus_coefficient(self, value: float) -> None:
         if value < 0:
             raise ValueError("Коэффициент премии не может быть отрицательным")
         self._bonus_coefficient = value
 
-    def calculate_bonus(self):
+    def calculate_bonus(self) -> float:
         return self.hours * self.rate * self.bonus_coefficient
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool | NotImplementedType:
         if type(self) is not type(other):
             return NotImplemented
         return vars(self) == vars(other)
 
 
 class SeniorEmployee(Employee):
-    def __init__(self, hours, rate, bonus_coefficient, specialization):
+    def __init__(self, hours: int, rate: int, bonus_coefficient: float, specialization: str):
         super().__init__(hours, rate, bonus_coefficient)
         self.specialization = specialization
 
     @property
-    def specialization(self):
+    def specialization(self) -> str:
         return self._specialization
 
     @specialization.setter
-    def specialization(self, value):
+    def specialization(self, value: str) -> None:
         if not value:
             raise ValueError("Специализация не может быть пустой")
         self._specialization = value
 
-    def salary_per_hour(self):
+    def salary_per_hour(self) -> float:
         base_salary = self.hours * self.rate
         return (base_salary + self.calculate_bonus()) / self.hours
 
 
 class Director(Employee):
-    def __init__(self, hours, rate, bonus_coefficient, department):
+    def __init__(self, hours: int, rate: int, bonus_coefficient: float, department: str):
         super().__init__(hours, rate, bonus_coefficient)
         self.department = department
 
     @property
-    def department(self):
+    def department(self) -> str:
         return self._department
 
     @department.setter
-    def department(self, value):
+    def department(self, value: str) -> None:
         if not value:
             raise ValueError("Отдел не может быть пустым")
         self._department = value
 
-    def salary_per_hour(self):
+    def salary_per_hour(self) -> float:
         base_salary = self.hours * self.rate
         return (base_salary + self.calculate_bonus()) / self.hours
 
