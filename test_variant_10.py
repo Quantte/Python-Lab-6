@@ -23,9 +23,8 @@ class EmployeeTests(unittest.TestCase):
         )
 
         for arguments in invalid_arguments:
-            with self.subTest(arguments=arguments):
-                with self.assertRaises(ValueError):
-                    Employee(**arguments)
+            with self.subTest(arguments=arguments), self.assertRaises(ValueError):
+                Employee(**arguments)
 
     def test_senior_employee_uses_inherited_data_and_has_specialization(self):
         employee = SeniorEmployee(160, 500, 0.2, specialization="Backend")
@@ -56,6 +55,43 @@ class EmployeeTests(unittest.TestCase):
         self.assertIs(employee.__eq__(senior), NotImplemented)
         self.assertIs(senior.__eq__(employee), NotImplemented)
         self.assertNotEqual(employee, senior)
+
+    def test_setters_update_values(self):
+        employee = Employee(160, 500, 0.2)
+
+        employee.hours = 100
+        employee.rate = 600
+        employee.bonus_coefficient = 0.5
+
+        self.assertEqual(employee.hours, 100)
+        self.assertEqual(employee.rate, 600)
+        self.assertEqual(employee.bonus_coefficient, 0.5)
+        self.assertEqual(employee.calculate_bonus(), 30_000)
+
+    def test_setters_reject_invalid_values_and_keep_old_ones(self):
+        employee = Employee(160, 500, 0.2)
+        invalid_values = (("hours", 0), ("rate", -1), ("bonus_coefficient", -0.1))
+
+        for name, value in invalid_values:
+            with self.subTest(name=name, value=value):
+                old_value = getattr(employee, name)
+                with self.assertRaises(ValueError):
+                    setattr(employee, name, value)
+                self.assertEqual(getattr(employee, name), old_value)
+
+    def test_subclass_setters(self):
+        senior = SeniorEmployee(160, 500, 0.2, "Backend")
+        director = Director(200, 1_000, 0.5, "Development")
+
+        senior.specialization = "Frontend"
+        director.department = "Sales"
+
+        self.assertEqual(senior.specialization, "Frontend")
+        self.assertEqual(director.department, "Sales")
+        with self.assertRaises(ValueError):
+            senior.specialization = ""
+        with self.assertRaises(ValueError):
+            Director(200, 1_000, 0.5, department="")
 
 
 if __name__ == "__main__":
